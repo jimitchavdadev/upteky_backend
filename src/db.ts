@@ -2,6 +2,8 @@ import { open, Database } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { hashSync } from 'bcryptjs';
 import 'dotenv/config';
+import { mkdir } from 'fs/promises'; // Import Node.js filesystem module
+import { dirname } from 'path'; // Import Node.js path module
 
 let db: Database;
 
@@ -9,6 +11,19 @@ export async function openDb() {
   if (db) return db;
 
   const dbPath = process.env.DATABASE_PATH || './db.sqlite';
+
+  // --- NEW FIX ---
+  // We must ensure the directory exists before sqlite tries to open the file.
+  // This is especially important for Render's /data mount.
+  try {
+    const dir = dirname(dbPath);
+    await mkdir(dir, { recursive: true });
+    console.log(`Database directory ${dir} ensured.`);
+  } catch (err) {
+    console.error('Failed to create database directory:', err);
+    // We'll still let it try to open, but this is the likely failure point.
+  }
+  // --- END NEW FIX ---
 
   db = await open({
     filename: dbPath,
