@@ -7,7 +7,6 @@ import authRoutes from './routes/auth';
 import formRoutes from './routes/forms';
 import feedbackRoutes from './routes/feedbacks';
 import analyticsRoutes from './routes/analytics';
-// This was the broken line. It's now fixed.
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
